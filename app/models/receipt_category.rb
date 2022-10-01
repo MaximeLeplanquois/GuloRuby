@@ -1,0 +1,2 @@
+class ReceiptCategory < ApplicationRecord
+end

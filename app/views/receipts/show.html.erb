@@ -1,0 +1,8 @@
+<ul>
+    <li>Date : <%= @receipt.date.strftime("%d-%m-%Y") %></li>
+    <li>Comment : <%= @receipt.comment %> </li>
+    <li>Income : <%= @receipt.is_income ? "Yes" : "No" %> </li>
+    <li>Total : <%= @receipt.total %> €</li>
+</ul>
+
+<%= link_to "All receipts", receipts_path %>
