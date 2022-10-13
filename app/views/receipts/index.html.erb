@@ -1,18 +1,20 @@
 <h1>All Receipts</h1>
-<%= link_to "Add receipt", new_receipt_path %>
+<%= link_to "Add receipt", new_receipt_path %><br>
+<%= link_to "Accounts", accounts_path %>
+<%= link_to "Categories", receipt_categories_path %>
 <table>
   <tr>
     <th>Date</th>
     <th>Comment</th>
     <th>Income</th>
-    <th>Total</th>
+<!--    <th>Total</th>-->
   </tr>
 <% @receipts.each do |receipt|%>
     <tr>
       <td><%= receipt.date.strftime("%d-%m-%Y") %></td>
       <td><%= receipt.comment %> </td>
       <td><%= receipt.is_income ? "Yes" : "No" %> </td>
-      <td><%= receipt.total %> €</td>
+<!--      <td><%#= receipt.total %> €</td>-->
       <td><%= link_to "Details", receipt %></td>
     </tr>
 <% end %>

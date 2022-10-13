@@ -1,0 +1,16 @@
+<h1>New Receipt Category</h1>
+
+<%= form_with model: @receipt_category do |form|%>
+  <div>
+    <%= form.label :name %><br>
+    <%= form.text_field :name %>
+    <% @receipt_category.errors.full_messages_for(:date).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
+<p><%= link_to "Home", root_path %></p>

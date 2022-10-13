@@ -23,6 +23,6 @@ class ReceiptsController < ApplicationController
   private
 
   def receipt_params
-    params.require(:receipt).permit(:date, :total, :comment, :is_income)
+    params.require(:receipt).permit(:date, :comment, :is_income)
   end
 end

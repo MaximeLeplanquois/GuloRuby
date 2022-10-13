@@ -1,0 +1,13 @@
+<h1>All Accounts</h1>
+<%= link_to "Add account", new_account_path %><br>
+<%= link_to "Receipts", receipts_path %>
+<table>
+  <tr>
+    <th>Name</th>
+  </tr>
+  <% @accounts.each do |account|%>
+    <tr>
+      <td><%= account.name %></td>
+    </tr>
+  <% end %>
+</table>
