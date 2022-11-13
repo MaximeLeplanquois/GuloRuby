@@ -3,7 +3,11 @@ Rails.application.routes.draw do
   root 'receipts#index'
   # Defines the root path route ("/")
   # root "articles#index"
-  resources :receipts
+  resources :receipts do
+    post :add_detail, on: :collection
+  end
   resources :accounts
   resources :receipt_categories
+  # resources :receipt_details, only: [:show]
+  resources :receipt_details
 end

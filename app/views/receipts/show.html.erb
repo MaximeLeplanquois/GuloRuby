@@ -2,6 +2,11 @@
     <li>Date : <%= @receipt.date.strftime("%d-%m-%Y") %></li>
     <li>Comment : <%= @receipt.comment %> </li>
     <li>Income : <%= @receipt.is_income ? "Yes" : "No" %> </li>
+    <% unless @receipt.receipt_details.nil? %>
+      <% @receipt.receipt_details.each do |detail| %>
+        <p> <%= detail.name %> <%= detail.price %> / <%= detail.quantity %></p>
+      <% end %>
+    <% end %>
 <!--    <li>Total : <%#= @receipt.total %> €</li>-->
 </ul>
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_12_185138) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_26_224319) do
   create_table "accounts", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -26,9 +26,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_12_185138) do
   create_table "receipt_details", force: :cascade do |t|
     t.string "name"
     t.float "price", null: false
-    t.integer "quantity"
+    t.integer "quantity", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "receipt_id", null: false
   end
 
   create_table "receipts", force: :cascade do |t|
@@ -39,4 +40,5 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_12_185138) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "receipt_details", "receipts"
 end
