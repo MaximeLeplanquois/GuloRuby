@@ -33,6 +33,27 @@
     <% end %>
   </div>
 
+  <turbo-frame id="<%= form.field_id(:receipt_prices) %>" class="contents">
+    <%#= render "receipt_details/new", receipt_detail: @receipt_detail %>
+    <%= form.fields_for :receipt_prices do |price_form| %>
+        <div>
+          <%= price_form.label :account_id %><br>
+          <%= price_form.collection_select :account_id, Account.order(:name),:id,:name%>
+          <%# @receipt_detail.errors.full_messages_for(:name).each do |message| %>
+          <!--          <div><%#= message %></div>-->
+          <%# end %>
+          <%= price_form.label :price %><br>
+          <%= price_form.text_field :price %>
+        </div>
+    <% end %>
+  </turbo-frame>
+
+  <%= form.submit "Add account",
+                  formmethod: "post",
+                  formaction: add_price_receipts_path(id: form.object),
+                  data: { turbo_frame: form.field_id(:receipt_details)},
+                  name: "add_price" %>
+
   <table>
     <tr>
       <th>Name</th>

@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   # root "articles#index"
   resources :receipts do
     post :add_detail, on: :collection
+    post :add_price, on: :collection
   end
   resources :accounts
   resources :receipt_categories

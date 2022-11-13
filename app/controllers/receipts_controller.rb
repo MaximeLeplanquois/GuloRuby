@@ -25,6 +25,19 @@ class ReceiptsController < ApplicationController
     render :edit
   end
 
+  def add_price
+    @receipt = Receipt.new(receipt_params.merge({id: params[:id]}))
+    @receipt.receipt_prices.build # add another detail
+    render :new
+  end
+
+  def add_price_edit
+    @receipt = Receipt.find(params[:id])
+    @receipt.attributes = receipt_params
+    @receipt.receipt_prices.build
+    render :edit
+  end
+
   def create
     @receipt = Receipt.new(receipt_params)
     if @receipt.save
@@ -38,6 +51,9 @@ class ReceiptsController < ApplicationController
 
   def receipt_params
     params.require(:receipt).permit(:date, :comment, :is_income, receipt_details_attributes: [
-                                      :id, :name, :price, :quantity, '_destroy'])
+                                      :id, :name, :price, :quantity, '_destroy'],
+                                    receipt_prices_attributes: [
+                                      :account_id, :price, '_destroy'
+                                    ])
   end
 end
