@@ -9,14 +9,6 @@
     <% end %>
   </div>
 
-<!--  <div>
-    <%#= form.label :total %><br>
-    <%#= form.number_field :total, min: 0, step: 0.01 %>
-    <%# @receipt.errors.full_messages_for(:total).each do |message| %>
-      <div><%#= message %></div>
-    <%# end %>
-  </div>-->
-
   <div>
     <%= form.label :comment %><br>
     <%= form.text_field :comment %>
@@ -33,27 +25,39 @@
     <% end %>
   </div>
 
+  <table>
+    <tr>
+      <th>Account</th>
+      <th>Price</th>
+      <th>Remove ?</th>
+    </tr>
   <turbo-frame id="<%= form.field_id(:receipt_prices) %>" class="contents">
     <%#= render "receipt_details/new", receipt_detail: @receipt_detail %>
     <%= form.fields_for :receipt_prices do |price_form| %>
-        <div>
-          <%= price_form.label :account_id %>
-          <%= price_form.collection_select :account_id, Account.order(:name), :id, :name%>
+        <tr>
+          <td><%= price_form.collection_select :account_id, Account.order(:name), :id, :name%></td>
           <% price_form.object.errors.full_messages_for(:account).each do |msg| %>
             <%= msg %>
           <% end %>
-          <%= price_form.label :price %>
-          <%= price_form.text_field :price, min: 0, step: 0.01 %>
+          <td><%= price_form.number_field :price, min: 0, step: 0.01 %></td>
           <% price_form.object.errors.full_messages_for(:price).each do |msg| %>
             <%= msg %>
           <% end %>
+          <td>
           <% if price_form.object_id %>
             <%= price_form.check_box :_destroy, title: "Check to remove account" %>
           <% end %>
-        </div>
+          </td>
+        </tr>
     <% end %>
   </turbo-frame>
-
+  </table>
+  <% if @message.present? %>
+    <%= @message %>
+  <% end %>
+  <% if @receipt.errors.present? %>
+    <%= @receipt.errors.full_messages %>
+  <% end %>
   <%= form.submit "Add account",
                   formmethod: "post",
                   formaction: add_price_receipts_path(id: form.object),
@@ -65,40 +69,30 @@
       <th>Name</th>
       <th>Price</th>
       <th>Quantity</th>
+      <th>Category</th>
       <th>Remove ?</th>
     </tr>
   <turbo-frame id="<%= form.field_id(:receipt_details) %>" class="contents">
     <%#= render "receipt_details/new", receipt_detail: @receipt_detail %>
     <%= form.fields_for :receipt_details do |detail_form| %>
       <tr>
-      <td>
-<!--        <%#= detail_form.label :name %><br>-->
-        <%= detail_form.text_field :name %>
-        <%# @receipt_detail.errors.full_messages_for(:name).each do |message| %>
-<!--          <div><%#= message %></div>-->
-        <%# end %>
-      </td>
-
-      <td>
-<!--        <%#= detail_form.label :price %><br>-->
-        <%= detail_form.number_field :price, min: 0, step: 0.01 %>
-        <%# @receipt_detail.errors.full_messages_for(:price).each do |message| %>
-<!--          <div><%#= message %></div>-->
-        <%# end %>
-      </td>
-
-      <td>
-<!--        <%#= detail_form.label :quantity %><br>-->
-        <%= detail_form.number_field :quantity, min: 1, step: 1 %>
-        <%# @receipt_detail.errors.full_messages_for(:quantity).each do |message| %>
-<!--          <div><%#= message %></div>-->
-        <%# end %>
-      </td>
+      <td><%= detail_form.text_field :name %></td>
+      <td><%= detail_form.number_field :price, min: 0, step: 0.01 %></td>
+      <td><%= detail_form.number_field :quantity, min: 1, step: 1 %></td>
+      <td><%= detail_form.collection_select :receipt_category_id, ReceiptCategory.order(:name), :id, :name%></td>
       <td>
       <% if detail_form.object_id %>
         <%= detail_form.check_box :_destroy, title: "Check to delete detail" %>
       <% end %>
       </td>
+        <% if detail_form.object.errors.present? %>
+        <td>
+          <% errors = detail_form.object.errors.full_messages
+             errors.each_with_index do |error, index| %>
+            <%= index.equal?(errors.size - 1) ? "#{error}" : "#{error},"%>
+          <% end %>
+        </td>
+        <%  end %>
       </tr>
     <% end %>
   </turbo-frame>

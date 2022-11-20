@@ -14,7 +14,7 @@ class ReceiptsController < ApplicationController
   end
 
   def add_detail
-    @receipt = Receipt.new(receipt_params.merge({id: params[:id]}))
+    @receipt = Receipt.new(receipt_params.merge({ id: params[:id] }))
     @receipt.receipt_details.build # add another detail
     render :new
   end
@@ -27,16 +27,17 @@ class ReceiptsController < ApplicationController
   end
 
   def update_form
-    @receipt = Receipt.new(receipt_params.merge({id: params[:id]}))
+    @receipt = Receipt.new(receipt_params.merge({ id: params[:id] }))
     render :new
   end
 
   def add_price
-    @receipt = Receipt.new(receipt_params.merge({id: params[:id]}))
+    @receipt = Receipt.new(receipt_params.merge({ id: params[:id] }))
     if @receipt.receipt_prices.size < Account.count
       @receipt.receipt_prices.build # add another detail
       render :new
     else
+      @message = 'Cannot add more accounts.'
       render :new, status: :unprocessable_entity
     end
   end
@@ -51,7 +52,7 @@ class ReceiptsController < ApplicationController
   def create
     @receipt = Receipt.new(receipt_params)
     if @receipt.save
-      redirect_to action: "index"
+      redirect_to action: 'index'
     else
       render :new, status: :unprocessable_entity
     end
@@ -61,7 +62,7 @@ class ReceiptsController < ApplicationController
 
   def receipt_params
     params.require(:receipt).permit(:date, :comment, :is_income, receipt_details_attributes: [
-                                      :id, :name, :price, :quantity, '_destroy'],
+                                      :id, :name, :price, :quantity, :receipt_category_id, '_destroy'],
                                     receipt_prices_attributes: [:account_id, :price, '_destroy']
     )
   end

@@ -3,9 +3,22 @@
     <li>Comment : <%= @receipt.comment %> </li>
     <li>Income : <%= @receipt.is_income ? "Yes" : "No" %> </li>
     <% unless @receipt.receipt_details.nil? %>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Category</th>
+      </tr>
       <% @receipt.receipt_details.each do |detail| %>
-        <p> <%= detail.name %> <%= detail.price %> / <%= detail.quantity %></p>
+        <tr>
+          <td><%= detail.name %></td>
+          <td><%= detail.price %></td>
+          <td><%= detail.quantity %></td>
+          <td><%= detail.receipt_category.name %></td>
+        </tr>
       <% end %>
+    </table>
     <% end %>
 <!--    <li>Total : <%#= @receipt.total %> €</li>-->
 </ul>

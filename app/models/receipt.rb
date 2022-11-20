@@ -15,4 +15,17 @@ class Receipt < ApplicationRecord
   accepts_nested_attributes_for :receipt_prices, allow_destroy: true
 
   validates_associated :receipt_prices
+
+  validate :total_equals_details_prices
+
+  def total_equals_details_prices
+    return if receipt_details.map(&:price).blank?
+    return if receipt_prices.map(&:price).blank?
+
+    details_total = receipt_details.map(&:price).sum
+    prices_total = receipt_prices.map(&:price).sum
+    if details_total != prices_total
+      errors.add(:base, "Totals do not match (Details : #{details_total}, Accounts : #{prices_total})")
+    end
+  end
 end
