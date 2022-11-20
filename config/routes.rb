@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resources :receipts do
     post :add_detail, on: :collection
     post :add_price, on: :collection
+    post :update_form, on: :collection
   end
   resources :accounts
   resources :receipt_categories

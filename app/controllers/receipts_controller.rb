@@ -10,6 +10,7 @@ class ReceiptsController < ApplicationController
   def new
     @receipt = Receipt.new
     @receipt.receipt_details.build
+    @receipt.receipt_prices.build
   end
 
   def add_detail
@@ -25,10 +26,19 @@ class ReceiptsController < ApplicationController
     render :edit
   end
 
+  def update_form
+    @receipt = Receipt.new(receipt_params.merge({id: params[:id]}))
+    render :new
+  end
+
   def add_price
     @receipt = Receipt.new(receipt_params.merge({id: params[:id]}))
-    @receipt.receipt_prices.build # add another detail
-    render :new
+    if @receipt.receipt_prices.size < Account.count
+      @receipt.receipt_prices.build # add another detail
+      render :new
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def add_price_edit
@@ -52,8 +62,7 @@ class ReceiptsController < ApplicationController
   def receipt_params
     params.require(:receipt).permit(:date, :comment, :is_income, receipt_details_attributes: [
                                       :id, :name, :price, :quantity, '_destroy'],
-                                    receipt_prices_attributes: [
-                                      :account_id, :price, '_destroy'
-                                    ])
+                                    receipt_prices_attributes: [:account_id, :price, '_destroy']
+    )
   end
 end
