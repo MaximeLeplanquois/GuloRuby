@@ -2,6 +2,23 @@
     <li>Date : <%= @receipt.date.strftime("%d-%m-%Y") %></li>
     <li>Comment : <%= @receipt.comment %> </li>
     <li>Income : <%= @receipt.is_income ? "Yes" : "No" %> </li>
+    <% unless @receipt.receipt_prices.nil? %>
+    <table>
+      <tr>
+        <th>Account</th>
+        <th>Price</th>
+      </tr>
+      <% @receipt.receipt_prices.each do |r_price| %>
+        <tr>
+          <td><%= Account.find(r_price.account_id).name %></td>
+          <td><%= r_price.price %> €</td>
+        </tr>
+      <% end %>
+      <tr>
+        <td colspan="2"> Total : <%= @receipt.receipt_prices.sum(:price) %> €</td>
+      </tr>
+    </table>
+    <% end %>
     <% unless @receipt.receipt_details.nil? %>
     <table>
       <tr>
@@ -13,7 +30,7 @@
       <% @receipt.receipt_details.each do |detail| %>
         <tr>
           <td><%= detail.name %></td>
-          <td><%= detail.price %></td>
+          <td><%= detail.price %> €</td>
           <td><%= detail.quantity %></td>
           <td><%= detail.receipt_category.name %></td>
         </tr>

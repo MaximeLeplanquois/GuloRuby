@@ -52,11 +52,18 @@
     <% end %>
   </turbo-frame>
   </table>
-  <% if @message.present? %>
-    <%= @message %>
+  <% if @no_more_accounts_msg.present? %>
+    <%= @no_more_accounts_msg %>
   <% end %>
-  <% if @receipt.errors.present? %>
-    <%= @receipt.errors.full_messages %>
+  <% if @receipt.errors.has_key? :prices_mismatch %>
+    <% @receipt.errors[:prices_mismatch].each do |msg| %>
+      <%= msg %>
+    <% end %>
+  <% end %>
+  <% if @receipt.errors.has_key? :duplicate_account %>
+    <% @receipt.errors[:duplicate_account].each do |msg| %>
+      <%= msg %>
+    <% end %>
   <% end %>
   <%= form.submit "Add account",
                   formmethod: "post",

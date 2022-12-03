@@ -37,7 +37,7 @@ class ReceiptsController < ApplicationController
       @receipt.receipt_prices.build # add another detail
       render :new
     else
-      @message = 'Cannot add more accounts.'
+      @no_more_accounts_msg = 'Cannot add more accounts.'
       render :new, status: :unprocessable_entity
     end
   end

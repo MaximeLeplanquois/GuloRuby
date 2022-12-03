@@ -7,14 +7,14 @@
     <th>Date</th>
     <th>Comment</th>
     <th>Income</th>
-<!--    <th>Total</th>-->
+    <th>Total</th>
   </tr>
 <% @receipts.each do |receipt|%>
     <tr>
       <td><%= receipt.date.strftime("%d-%m-%Y") %></td>
       <td><%= receipt.comment %> </td>
       <td><%= receipt.is_income ? "Yes" : "No" %> </td>
-<!--      <td><%#= receipt.total %> €</td>-->
+      <td><%= receipt.receipt_prices.sum(:price) %> €</td>
       <td><%= link_to "Details", receipt %></td>
     </tr>
 <% end %>

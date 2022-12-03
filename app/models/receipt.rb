@@ -17,15 +17,24 @@ class Receipt < ApplicationRecord
   validates_associated :receipt_prices
 
   validate :total_equals_details_prices
+  validate :accounts_uniqueness
 
   def total_equals_details_prices
-    return if receipt_details.map(&:price).blank?
-    return if receipt_prices.map(&:price).blank?
+    # Check that every price is valid for both list
+    return unless receipt_prices.map(&:price).map(&:present?).all?
+    return unless receipt_details.map(&:price).map(&:present?).all?
 
     details_total = receipt_details.map(&:price).sum
     prices_total = receipt_prices.map(&:price).sum
     if details_total != prices_total
-      errors.add(:base, "Totals do not match (Details : #{details_total}, Accounts : #{prices_total})")
+      errors.add(:prices_mismatch, "Totals do not match (Details : #{details_total}, Accounts : #{prices_total})")
     end
+  end
+
+  def accounts_uniqueness
+    accounts_id = receipt_prices.map(&:account_id)
+    unique_accounts_id = accounts_id.uniq
+    return unless unique_accounts_id.size != accounts_id.size
+    errors.add(:duplicate_account, "Some accounts are referenced more than once.")
   end
 end
