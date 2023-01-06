@@ -22,17 +22,24 @@ class Receipt < ApplicationRecord
   validate :total_equals_details_prices_and_discounts
   validate :accounts_uniqueness
 
-  #todo add discount checks
-  #todo take quantity in account when calculating prices
   def total_equals_details_prices_and_discounts
     # Check that every price is valid for both list
     return unless receipt_prices.map(&:price).map(&:present?).all?
     return unless receipt_details.map(&:price).map(&:present?).all?
 
-    details_total = receipt_details.map(&:price).sum
+    # For details, map price and quantity column and perform the multiplication
+    price_to_quantity = receipt_details.map(&:price).zip(receipt_details.map(&:quantity)).map { |p, q| p * q }
+    # Sum everything
+    details_total = price_to_quantity.sum
     prices_total = receipt_prices.map(&:price).sum
-    if details_total != prices_total
-      errors.add(:prices_mismatch, "Totals do not match (Details : #{details_total}, Accounts : #{prices_total})")
+    # Set discount total to 0 if no discounts are present
+    discounts_total = receipt_discounts.present? ? receipt_discounts.map(&:discount).sum : 0
+
+    if details_total - discounts_total != prices_total
+      errors.add(
+        :prices_mismatch,
+        "Totals do not match (Details : #{details_total}, Discounts : #{discounts_total}, Accounts : #{prices_total})"
+      )
     end
   end
 
@@ -41,5 +48,9 @@ class Receipt < ApplicationRecord
     unique_accounts_id = accounts_id.uniq
     return unless unique_accounts_id.size != accounts_id.size
     errors.add(:duplicate_account, "Some accounts are referenced more than once.")
+  end
+
+  def receipt_details_subtotal
+    receipt_details.pluck(:price, :quantity).map { |p, q| p * q }.sum
   end
 end

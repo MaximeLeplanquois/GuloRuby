@@ -12,11 +12,11 @@
       <% @receipt.receipt_prices.each do |r_price| %>
         <tr>
           <td><%= Account.find(r_price.account_id).name %></td>
-          <td><%= r_price.price %> €</td>
+          <td><%= number_to_currency(r_price.price, format: "%n") %> €</td>
         </tr>
       <% end %>
       <tr>
-        <td colspan="2"> Total : <%= @receipt.receipt_prices.sum(:price) %> €</td>
+        <td colspan="2"> Total : <%= number_to_currency(@receipt.receipt_prices.sum(:price), format: "%n") %> €</td>
       </tr>
     </table>
     <% end %>
@@ -31,11 +31,14 @@
       <% @receipt.receipt_details.each do |detail| %>
         <tr>
           <td><%= detail.name %></td>
-          <td><%= detail.price %> €</td>
+          <td><%= number_to_currency(detail.price, format: "%n") %> €</td>
           <td><%= detail.quantity %></td>
           <td><%= detail.receipt_category.name %></td>
         </tr>
       <% end %>
+      <tr>
+        <td colspan="4"> Total : <%= number_to_currency(@receipt.receipt_details_subtotal, format: "%n") %> €</td>
+      </tr>
     </table>
     <% end %>
     <% unless @receipt.receipt_discounts.nil? %>
@@ -47,12 +50,11 @@
       <% @receipt.receipt_discounts.each do |discount| %>
         <tr>
           <td><%= discount.comment %></td>
-          <td><%= discount.discount %> €</td>
+          <td><%= number_to_currency(discount.discount, format: "%n") %> €</td>
         </tr>
       <% end %>
     </table>
   <% end %>
-<!--    <li>Total : <%#= @receipt.total %> €</li>-->
 </ul>
 
 <%= link_to "All receipts", receipts_path %>
