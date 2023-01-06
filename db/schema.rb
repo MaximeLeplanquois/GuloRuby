@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_20_000202) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_06_120842) do
   create_table "accounts", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -33,6 +33,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_20_000202) do
     t.integer "receipt_category_id"
   end
 
+  create_table "receipt_discounts", force: :cascade do |t|
+    t.float "discount", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "receipt_id"
+    t.text "comment"
+    t.index ["receipt_id"], name: "index_receipt_discounts_on_receipt_id"
+  end
+
   create_table "receipt_prices", id: false, force: :cascade do |t|
     t.integer "receipt_id", null: false
     t.integer "account_id", null: false
@@ -45,8 +54,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_20_000202) do
     t.boolean "is_income"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "location"
   end
 
   add_foreign_key "receipt_details", "receipt_categories"
   add_foreign_key "receipt_details", "receipts"
+  add_foreign_key "receipt_discounts", "receipts"
 end

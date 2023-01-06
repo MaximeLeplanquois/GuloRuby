@@ -18,6 +18,14 @@
   </div>
 
   <div>
+    <%= form.label :location %><br>
+    <%= form.text_field :location %>
+    <% @receipt.errors.full_messages_for(:location).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+  </div>
+
+  <div>
     <%= form.label :is_income %><br>
     <%= form.check_box :is_income %>
     <% @receipt.errors.full_messages_for(:is_income).each do |message| %>
@@ -109,6 +117,41 @@
                   formaction: add_detail_receipts_path(id: form.object),
                   data: { turbo_frame: form.field_id(:receipt_details)},
                   name: "add_detail" %>
+
+  <table>
+    <tr>
+      <th>Comment</th>
+      <th>Discount</th>
+      <th>Remove ?</th>
+    </tr>
+    <turbo-frame id="<%= form.field_id(:receipt_discounts) %>" class="contents">
+      <%#= render "receipt_details/new", receipt_detail: @receipt_detail %>
+      <%= form.fields_for :receipt_discounts do |detail_form| %>
+        <tr>
+          <td><%= detail_form.text_field :comment %></td>
+          <td><%= detail_form.number_field :discount, min: 0, step: 0.01 %></td>
+          <td>
+            <% if detail_form.object_id %>
+              <%= detail_form.check_box :_destroy, title: "Check to delete detail" %>
+            <% end %>
+          </td>
+          <% if detail_form.object.errors.present? %>
+            <td>
+              <% errors = detail_form.object.errors.full_messages
+                 errors.each_with_index do |error, index| %>
+                <%= index.equal?(errors.size - 1) ? "#{error}" : "#{error},"%>
+              <% end %>
+            </td>
+          <%  end %>
+        </tr>
+      <% end %>
+    </turbo-frame>
+  </table>
+  <%= form.submit "Add discount",
+                  formmethod: "post",
+                  formaction: add_discount_receipts_path(id: form.object),
+                  data: { turbo_frame: form.field_id(:receipt_discounts)},
+                  name: "add_discount" %>
 
   <%= form.submit "Update form",
                   formmethod: "post",

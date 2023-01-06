@@ -1,6 +1,7 @@
 <ul>
     <li>Date : <%= @receipt.date.strftime("%d-%m-%Y") %></li>
     <li>Comment : <%= @receipt.comment %> </li>
+    <li>Location : <%= @receipt.location %> </li>
     <li>Income : <%= @receipt.is_income ? "Yes" : "No" %> </li>
     <% unless @receipt.receipt_prices.nil? %>
     <table>
@@ -37,6 +38,20 @@
       <% end %>
     </table>
     <% end %>
+    <% unless @receipt.receipt_discounts.nil? %>
+    <table>
+      <tr>
+        <th>Comment</th>
+        <th>Discount</th>
+      </tr>
+      <% @receipt.receipt_discounts.each do |discount| %>
+        <tr>
+          <td><%= discount.comment %></td>
+          <td><%= discount.discount %> €</td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
 <!--    <li>Total : <%#= @receipt.total %> €</li>-->
 </ul>
 

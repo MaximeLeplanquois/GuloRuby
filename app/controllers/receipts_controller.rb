@@ -13,6 +13,13 @@ class ReceiptsController < ApplicationController
     @receipt.receipt_prices.build
   end
 
+  def destroy
+    @receipt = Receipt.find(params[:id])
+    @receipt.destroy
+
+    redirect_to root_path
+  end
+
   def add_detail
     @receipt = Receipt.new(receipt_params.merge({ id: params[:id] }))
     @receipt.receipt_details.build # add another detail
@@ -49,6 +56,19 @@ class ReceiptsController < ApplicationController
     render :edit
   end
 
+  def add_discount
+    @receipt = Receipt.new(receipt_params.merge({ id: params[:id] }))
+    @receipt.receipt_discounts.build # add another discount
+    render :new
+  end
+
+  def add_discount_edit
+    @receipt = Receipt.find(params[:id])
+    @receipt.attributes = receipt_params
+    @receipt.receipt_discounts.build
+    render :edit
+  end
+
   def create
     @receipt = Receipt.new(receipt_params)
     if @receipt.save
@@ -61,9 +81,10 @@ class ReceiptsController < ApplicationController
   private
 
   def receipt_params
-    params.require(:receipt).permit(:date, :comment, :is_income, receipt_details_attributes: [
+    params.require(:receipt).permit(:date, :comment, :is_income, :location, receipt_details_attributes: [
                                       :id, :name, :price, :quantity, :receipt_category_id, '_destroy'],
-                                    receipt_prices_attributes: [:account_id, :price, '_destroy']
+                                    receipt_prices_attributes: [:account_id, :price, '_destroy'],
+                                    receipt_discounts_attributes: [:comment, :discount, '_destroy']
     )
   end
 end

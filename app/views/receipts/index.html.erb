@@ -6,6 +6,7 @@
   <tr>
     <th>Date</th>
     <th>Comment</th>
+    <th>Location</th>
     <th>Income</th>
     <th>Total</th>
   </tr>
@@ -13,9 +14,11 @@
     <tr>
       <td><%= receipt.date.strftime("%d-%m-%Y") %></td>
       <td><%= receipt.comment %> </td>
+      <td><%= receipt.location %> </td>
       <td><%= receipt.is_income ? "Yes" : "No" %> </td>
       <td><%= receipt.receipt_prices.sum(:price) %> €</td>
       <td><%= link_to "Details", receipt %></td>
+      <td><%= button_to "Delete", receipt, :method => :delete %></td>
     </tr>
 <% end %>
 </table>
