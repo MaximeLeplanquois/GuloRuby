@@ -1,3 +1,21 @@
+<%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+<%= javascript_include_tag 'application', 'data-turbolinks-track': true %>
+<%= csrf_meta_tags %>
+
+<script>
+    $(document).ready(function(){
+        $('#receipt_location').autocomplete({
+            source: function( request, response ) {
+                var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( $.grep( $('#receipt_location').data('autocomplete-source'), function( item ){
+                    return matcher.test( item );
+                }) );
+            },
+            minLength: 1
+        });
+    });
+</script>
+
 <h1>New Receipt</h1>
 
 <%= form_with model: @receipt do |form|%>
@@ -19,7 +37,7 @@
 
   <div>
     <%= form.label :location %><br>
-    <%= form.text_field :location %>
+    <%= form.text_field :location, data: {autocomplete_source: Receipt.distinct.pluck(:location).sort_by { |s| s.downcase }}%>
     <% @receipt.errors.full_messages_for(:location).each do |message| %>
       <div><%= message %></div>
     <% end %>
