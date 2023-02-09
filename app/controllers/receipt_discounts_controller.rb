@@ -3,19 +3,17 @@ class ReceiptDiscountsController < ApplicationController
     @receipt_discount = ReceiptDiscount.find(params[:id])
   end
 
-  def new
-    @receipt_discount = ReceiptDiscount.new
+  def create
+    @receipt = Receipt.new(receipt_discounts: [ReceiptDiscount.new])
   end
 
-  def create
-    @receipt = Receipt.find(params[:id])
-    @receipt_discount = @receipt.receipt_discounts.create(receipt_discount_params)
-    redirect_to receipts_path(@receipt)
+  def destroy
+    @receipt = Receipt.new(receipt_discounts: [ReceiptDiscount.new])
   end
 
   private
 
   def receipt_discount_params
-    params.require(:receipt_detail).permit(:comment, :discount)
+    params.require(:receipt_discounts_attributes).permit(:comment, :discount)
   end
 end

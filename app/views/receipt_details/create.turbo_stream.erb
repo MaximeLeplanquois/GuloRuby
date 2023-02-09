@@ -1,0 +1,15 @@
+<%= fields model: @receipt do |form| %>
+  <%= form.fields_for :receipt_details, child_index: params[:index] do |detail_form| %>
+    <%= turbo_stream.replace "add-receipt-detail" do %>
+      <%= form.submit "Add detail",
+                      formaction: receipt_detail_path(detail_form.index.to_i + 1),
+                      formmethod: :post,
+                      formnovalidate: true,
+                      id: "add-receipt-detail" %>
+    <% end %>
+    <%= turbo_stream.append "receipt_details" do %>
+      <%= render "receipt_details/new", form: detail_form %>
+    <% end %>
+    <%= turbo_stream.update 'receipt_details_error_messages', "" %>
+  <% end %>
+<% end %>

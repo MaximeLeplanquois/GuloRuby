@@ -1,25 +1,12 @@
-<%= form_with model: @receipt_detail do |form|%>
-  <div>
-    <%= form.label :name %><br>
-    <%= form.text_field :name %>
-    <% @receipt_detail.errors.full_messages_for(:name).each do |message| %>
-      <div><%= message %></div>
-    <% end %>
-  </div>
-
-  <div>
-    <%= form.label :price %><br>
-    <%= form.number_field :price, min: 0, step: 0.01 %>
-    <% @receipt_detail.errors.full_messages_for(:price).each do |message| %>
-      <div><%= message %></div>
-    <% end %>
-  </div>
-
-  <div>
-    <%= form.label :quantity %><br>
-    <%= form.number_field :quantity, min: 1, step: 1 %>
-    <% @receipt_detail.errors.full_messages_for(:quantity).each do |message| %>
-      <div><%= message %></div>
-    <% end %>
-  </div>
-<% end %>
+<tr id=<%="receipt_detail_#{form.index}"%>>
+  <%= form.hidden_field :id %>
+  <td><%= form.text_field :name %></td>
+  <td><%= form.number_field :price, min: 0, step: 0.01 %></td>
+  <td><%= form.number_field :quantity, min: 1, step: 1 %></td>
+  <td><%= form.collection_select :receipt_category_id, ReceiptCategory.order(:name), :id, :name%></td>
+  <td><%= form.submit "Remove detail",
+                      formaction: receipt_detail_path(form.index, form.object.id),
+                      formmethod: :delete,
+                      formnovalidate: true,
+                      data: { turbo_frame: "receipt_detail_#{form.index}" } %></td>
+</tr>

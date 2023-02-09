@@ -1,0 +1,15 @@
+<%= fields model: @receipt do |form| %>
+  <%= form.fields_for :receipt_prices, child_index: params[:index] do |price_form| %>
+    <%= turbo_stream.replace "add-receipt-price" do %>
+      <%= form.submit "Add account",
+                      formaction: receipt_price_path(price_form.index.to_i + 1),
+                      formmethod: :post,
+                      formnovalidate: true,
+                      id: "add-receipt-price" %>
+    <% end %>
+    <%= turbo_stream.append "receipt_prices" do %>
+      <%= render "receipt_prices/new", form: price_form %>
+    <% end %>
+    <%= turbo_stream.update 'receipt_prices_error_messages', "" %>
+  <% end %>
+<% end %>

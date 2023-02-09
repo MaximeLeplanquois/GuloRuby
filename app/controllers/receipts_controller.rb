@@ -8,22 +8,8 @@ class ReceiptsController < ApplicationController
   end
 
   def new
-    @receipt = Receipt.new
-    @receipt.receipt_details.build
-    @receipt.receipt_prices.build
-  end
-
-  def destroy
-    @receipt = Receipt.find(params[:id])
-    @receipt.destroy
-
-    redirect_to root_path
-  end
-
-  def add_detail
-    @receipt = Receipt.new(receipt_params.merge({ id: params[:id] }))
-    @receipt.receipt_details.build # add another detail
-    render :new
+    @receipt = Receipt.new(receipt_details: [ReceiptDetail.new],
+                           receipt_prices: [ReceiptPrice.new])
   end
 
   def add_detail_edit
@@ -38,28 +24,11 @@ class ReceiptsController < ApplicationController
     render :new
   end
 
-  def add_price
-    @receipt = Receipt.new(receipt_params.merge({ id: params[:id] }))
-    if @receipt.receipt_prices.size < Account.count
-      @receipt.receipt_prices.build # add another detail
-      render :new
-    else
-      @no_more_accounts_msg = 'Cannot add more accounts.'
-      render :new, status: :unprocessable_entity
-    end
-  end
-
   def add_price_edit
     @receipt = Receipt.find(params[:id])
     @receipt.attributes = receipt_params
     @receipt.receipt_prices.build
     render :edit
-  end
-
-  def add_discount
-    @receipt = Receipt.new(receipt_params.merge({ id: params[:id] }))
-    @receipt.receipt_discounts.build # add another discount
-    render :new
   end
 
   def add_discount_edit

@@ -1,3 +1,5 @@
+<%= javascript_importmap_tags %>
+
 <h1>All Receipts</h1>
 <%= link_to "Add receipt", new_receipt_path %><br>
 <%= link_to "Accounts", accounts_path %>
@@ -18,7 +20,8 @@
       <td><%= receipt.is_income ? "Yes" : "No" %> </td>
       <td><%= receipt.receipt_prices.sum(:price) %> €</td>
       <td><%= link_to "Details", receipt %></td>
-      <td><%= button_to "Delete", receipt, :method => :delete %></td>
+      <td><%= button_to "Delete", receipt, :method => :delete, form: { data: { turbo_confirm: "Are you sure ?" } } %></td>
+      <td><%= button_to "Test", receipt, :method => :get, form: { data: { turbo_confirm: "Are you sure ?" } } %></td>
     </tr>
 <% end %>
 </table>

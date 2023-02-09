@@ -37,36 +37,6 @@
     <% end %>
   </div>
 
-  <table>
-    <tr>
-      <th>Account</th>
-      <th>Price</th>
-      <th>Remove ?</th>
-    </tr>
-  <turbo-frame id="<%= form.field_id(:receipt_prices) %>" class="contents">
-    <%#= render "receipt_details/new", receipt_detail: @receipt_detail %>
-    <%= form.fields_for :receipt_prices do |price_form| %>
-        <tr>
-          <td><%= price_form.collection_select :account_id, Account.order(:name), :id, :name%></td>
-          <% price_form.object.errors.full_messages_for(:account).each do |msg| %>
-            <%= msg %>
-          <% end %>
-          <td><%= price_form.number_field :price, min: 0, step: 0.01 %></td>
-          <% price_form.object.errors.full_messages_for(:price).each do |msg| %>
-            <%= msg %>
-          <% end %>
-          <td>
-          <% if price_form.object_id %>
-            <%= price_form.check_box :_destroy, title: "Check to remove account" %>
-          <% end %>
-          </td>
-        </tr>
-    <% end %>
-  </turbo-frame>
-  </table>
-  <% if @no_more_accounts_msg.present? %>
-    <%= @no_more_accounts_msg %>
-  <% end %>
   <% if @receipt.errors.has_key? :prices_mismatch %>
     <% @receipt.errors[:prices_mismatch].each do |msg| %>
       <%= msg %>
@@ -77,50 +47,48 @@
       <%= msg %>
     <% end %>
   <% end %>
-  <%= form.submit "Add account",
-                  formmethod: "post",
-                  formaction: add_price_receipts_path(id: form.object),
-                  data: { turbo_frame: form.field_id(:receipt_details)},
-                  name: "add_price" %>
-
   <table>
     <tr>
-      <th>Name</th>
+      <th>Account</th>
       <th>Price</th>
-      <th>Quantity</th>
-      <th>Category</th>
       <th>Remove ?</th>
     </tr>
-  <turbo-frame id="<%= form.field_id(:receipt_details) %>" class="contents">
-    <%#= render "receipt_details/new", receipt_detail: @receipt_detail %>
-    <%= form.fields_for :receipt_details do |detail_form| %>
-      <tr>
-      <td><%= detail_form.text_field :name %></td>
-      <td><%= detail_form.number_field :price, min: 0, step: 0.01 %></td>
-      <td><%= detail_form.number_field :quantity, min: 1, step: 1 %></td>
-      <td><%= detail_form.collection_select :receipt_category_id, ReceiptCategory.order(:name), :id, :name%></td>
-      <td>
-      <% if detail_form.object_id %>
-        <%= detail_form.check_box :_destroy, title: "Check to delete detail" %>
-      <% end %>
-      </td>
-        <% if detail_form.object.errors.present? %>
-        <td>
-          <% errors = detail_form.object.errors.full_messages
-             errors.each_with_index do |error, index| %>
-            <%= index.equal?(errors.size - 1) ? "#{error}" : "#{error},"%>
-          <% end %>
-        </td>
-        <%  end %>
-      </tr>
+    <tbody id="receipt_prices">
+    <%= form.fields_for :receipt_prices do |price_form| %>
+      <%= render "receipt_prices/new", form: price_form %>
     <% end %>
-  </turbo-frame>
+    </tbody>
   </table>
+  <div id="receipt_prices_error_messages">
+  </div>
+  <%= form.submit "Add account",
+                  formmethod: "post",
+                  formaction: receipt_price_path(@receipt.receipt_prices.size),
+                  formnovalidate: true,
+                  id: "add-receipt-price"
+      %>
+  <table>
+      <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Category</th>
+        <th>Remove ?</th>
+      </tr>
+    <tbody id="receipt_details">
+    <%= form.fields_for :receipt_details do |detail_form| %>
+      <%= render "receipt_details/new", form: detail_form %>
+    <% end %>
+    </tbody>
+  </table>
+  <div id="receipt_details_error_messages">
+  </div>
   <%= form.submit "Add detail",
                   formmethod: "post",
-                  formaction: add_detail_receipts_path(id: form.object),
-                  data: { turbo_frame: form.field_id(:receipt_details)},
-                  name: "add_detail" %>
+                  formaction: receipt_detail_path(@receipt.receipt_details.size),
+                  formnovalidate: true,
+                  id: "add-receipt-detail"
+  %>
 
   <table>
     <tr>
@@ -128,40 +96,20 @@
       <th>Discount</th>
       <th>Remove ?</th>
     </tr>
-    <turbo-frame id="<%= form.field_id(:receipt_discounts) %>" class="contents">
-      <%#= render "receipt_details/new", receipt_detail: @receipt_detail %>
-      <%= form.fields_for :receipt_discounts do |detail_form| %>
-        <tr>
-          <td><%= detail_form.text_field :comment %></td>
-          <td><%= detail_form.number_field :discount, min: 0, step: 0.01 %></td>
-          <td>
-            <% if detail_form.object_id %>
-              <%= detail_form.check_box :_destroy, title: "Check to delete detail" %>
-            <% end %>
-          </td>
-          <% if detail_form.object.errors.present? %>
-            <td>
-              <% errors = detail_form.object.errors.full_messages
-                 errors.each_with_index do |error, index| %>
-                <%= index.equal?(errors.size - 1) ? "#{error}" : "#{error},"%>
-              <% end %>
-            </td>
-          <%  end %>
-        </tr>
-      <% end %>
-    </turbo-frame>
+    <tbody id="receipt_discounts">
+    <%= form.fields_for :receipt_discounts do |discount_form| %>
+      <%= render "receipt_discounts/new", form: discount_form %>
+    <% end %>
+    </tbody>
   </table>
+  <div id="receipt_discounts_error_messages">
+  </div>
   <%= form.submit "Add discount",
                   formmethod: "post",
-                  formaction: add_discount_receipts_path(id: form.object),
-                  data: { turbo_frame: form.field_id(:receipt_discounts)},
-                  name: "add_discount" %>
-
-  <%= form.submit "Update form",
-                  formmethod: "post",
-                  formaction: update_form_receipts_path(id: form.object),
-                  data: { turbo_frame: form.field_id(:receipt_details)},
-                  name: "update_form" %>
+                  formaction: receipt_discount_path(@receipt.receipt_discounts.size),
+                  formnovalidate: true,
+                  id: "add-receipt-discount"
+  %>
 
   <div>
     <%= form.submit %>

@@ -1,0 +1,15 @@
+<%= fields model: @receipt do |form| %>
+  <%= form.fields_for :receipt_discounts, child_index: params[:index] do |discount_form| %>
+    <%= turbo_stream.replace "add-receipt-discount" do %>
+      <%= form.submit "Add discount",
+                      formaction: receipt_discount_path(discount_form.index.to_i + 1),
+                      formmethod: :post,
+                      formnovalidate: true,
+                      id: "add-receipt-discount" %>
+    <% end %>
+    <%= turbo_stream.append "receipt_discounts" do %>
+      <%= render "receipt_discounts/new", form: discount_form %>
+    <% end %>
+    <%= turbo_stream.update 'receipt_discounts_error_messages', "" %>
+  <% end %>
+<% end %>

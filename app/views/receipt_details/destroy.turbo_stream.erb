@@ -1,0 +1,6 @@
+<%= fields model: @receipt do |form| %>
+  <%= form.fields_for :receipt_details, child_index: params[:index] do |detail_form| %>
+    <%= turbo_stream.remove "receipt_detail_#{detail_form.index}"%>
+    <%= turbo_stream.update 'receipt_prices_error_messages', "" %>
+  <% end %>
+<% end %>
