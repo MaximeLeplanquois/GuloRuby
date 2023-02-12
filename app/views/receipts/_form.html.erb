@@ -1,0 +1,91 @@
+<div id="receipt_errors"></div>
+
+<%= form_with model: @receipt do |form|%>
+  <div>
+    <%= form.label :date %><br>
+    <%= form.date_field :date, :value => Time.now.strftime("%Y-%m-%d") %>
+  </div>
+
+  <div>
+    <%= form.label :comment %><br>
+    <%= form.text_field :comment %>
+  </div>
+
+  <div>
+    <%= form.label :location %><br>
+    <%= form.text_field :location, data: {autocomplete_source: Receipt.distinct.pluck(:location).sort_by { |s| s.downcase }}%>
+  </div>
+
+  <div>
+    <%= form.label :is_income %><br>
+    <%= form.check_box :is_income %>
+  </div>
+
+  <table>
+    <tr>
+      <th>Account</th>
+      <th>Price</th>
+      <th>Remove ?</th>
+    </tr>
+    <tbody id="receipt_prices">
+    <%= form.fields_for :receipt_prices do |price_form| %>
+      <%= render "receipt_prices/new", form: price_form %>
+    <% end %>
+    </tbody>
+  </table>
+  <div id="receipt_prices_error_messages">
+  </div>
+  <%= form.submit "Add account",
+                  formmethod: "post",
+                  formaction: receipt_price_path(@receipt.receipt_prices.size),
+                  formnovalidate: true,
+                  id: "add-receipt-price"
+  %>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Price</th>
+      <th>Quantity</th>
+      <th>Category</th>
+      <th>Remove ?</th>
+    </tr>
+    <tbody id="receipt_details">
+    <%= form.fields_for :receipt_details do |detail_form| %>
+      <%= render "receipt_details/new", form: detail_form %>
+    <% end %>
+    </tbody>
+  </table>
+  <div id="receipt_details_error_messages">
+  </div>
+  <%= form.submit "Add detail",
+                  formmethod: "post",
+                  formaction: receipt_detail_path(@receipt.receipt_details.size),
+                  formnovalidate: true,
+                  id: "add-receipt-detail"
+  %>
+
+  <table>
+    <tr>
+      <th>Comment</th>
+      <th>Discount</th>
+      <th>Remove ?</th>
+    </tr>
+    <tbody id="receipt_discounts">
+    <%= form.fields_for :receipt_discounts do |discount_form| %>
+      <%= render "receipt_discounts/new", form: discount_form %>
+    <% end %>
+    </tbody>
+  </table>
+  <div id="receipt_discounts_error_messages">
+  </div>
+  <%= form.submit "Add discount",
+                  formmethod: "post",
+                  formaction: receipt_discount_path(@receipt.receipt_discounts.size),
+                  formnovalidate: true,
+                  id: "add-receipt-discount"
+  %>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

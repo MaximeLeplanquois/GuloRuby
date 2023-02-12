@@ -10,25 +10,22 @@ Rails.application.routes.draw do
 
   resources :receipt_details, only: [], param: :index do
     member do
-      delete '(:id)' => 'receipt_details#destroy', as: ""
+      delete '(:id)' => 'receipt_details#destroy', as: ''
       post '/' => 'receipt_details#create'
     end
   end
   resources :receipt_prices, only: [], param: :index do
     member do
-      delete '(:id)' => 'receipt_prices#destroy', as: ""
+      delete '(:id)' => 'receipt_prices#destroy', as: ''
       post '/' => 'receipt_prices#create'
     end
   end
   resources :receipt_discounts, only: [], param: :index do
     member do
-      delete '(:id)' => 'receipt_discounts#destroy', as: ""
+      delete '(:id)' => 'receipt_discounts#destroy', as: ''
       post '/' => 'receipt_discounts#create'
     end
   end
   resources :accounts
   resources :receipt_categories
-  # resources :receipt_prices
-  # resources :receipt_details, only: [:show]
-  # resources :receipt_details
 end
