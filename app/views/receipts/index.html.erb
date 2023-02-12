@@ -18,10 +18,10 @@
       <td><%= receipt.comment %> </td>
       <td><%= receipt.location %> </td>
       <td><%= receipt.is_income ? "Yes" : "No" %> </td>
-      <td><%= receipt.receipt_prices.sum(:price) %> €</td>
+      <td><%= number_to_currency(receipt.receipt_prices.sum(:price), format: "%n") %> €</td>
       <td><%= link_to "Details", receipt %></td>
+      <td><%= button_to "Edit", receipt_edit_path(receipt), :method => :get %></td>
       <td><%= button_to "Delete", receipt, :method => :delete, form: { data: { turbo_confirm: "Are you sure ?" } } %></td>
-      <td><%= button_to "Test", receipt, :method => :get, form: { data: { turbo_confirm: "Are you sure ?" } } %></td>
     </tr>
 <% end %>
 </table>

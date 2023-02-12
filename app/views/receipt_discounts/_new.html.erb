@@ -1,5 +1,4 @@
 <tr id=<%="receipt_discount_#{form.index}"%>>
-  <%= form.hidden_field :id %>
   <td><%= form.text_field :comment %></td>
   <td><%= form.number_field :discount, min: 0, step: 0.01 %></td>
   <td><%= form.submit "Remove discount",

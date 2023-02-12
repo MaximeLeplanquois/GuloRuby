@@ -1,6 +1,8 @@
 <%= fields model: @receipt do |form| %>
   <%= form.fields_for :receipt_discounts, child_index: params[:index] do |discount_form| %>
-    <%= turbo_stream.remove "receipt_discount_#{discount_form.index}"%>
+    <%= turbo_stream.replace "receipt_discount_#{discount_form.index}",
+                             partial: "common/destroyed",
+                             locals: {form: discount_form} %>
     <%= turbo_stream.update 'receipt_discounts_error_messages', "" %>
   <% end %>
 <% end %>

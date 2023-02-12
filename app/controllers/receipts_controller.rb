@@ -12,30 +12,33 @@ class ReceiptsController < ApplicationController
                            receipt_prices: [ReceiptPrice.new])
   end
 
-  def add_detail_edit
+  def destroy
     @receipt = Receipt.find(params[:id])
-    @receipt.attributes = receipt_params
-    @receipt.receipt_details.build
-    render :edit
+    @receipt.destroy
+
+    redirect_to root_path
   end
 
-  def update_form
-    @receipt = Receipt.new(receipt_params.merge({ id: params[:id] }))
-    render :new
+  def edit
+    @receipt = Receipt.find(params[:id])
+    render 'receipts/edit'
   end
 
-  def add_price_edit
+  def update
     @receipt = Receipt.find(params[:id])
-    @receipt.attributes = receipt_params
-    @receipt.receipt_prices.build
-    render :edit
-  end
-
-  def add_discount_edit
-    @receipt = Receipt.find(params[:id])
-    @receipt.attributes = receipt_params
-    @receipt.receipt_discounts.build
-    render :edit
+    if @receipt.update(receipt_params) && @receipt.valid?
+      redirect_to @receipt
+    else
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.update(
+            'receipt_errors',
+            partial: 'common/errors',
+            locals: { errors_list: @receipt.errors }
+          )
+        end
+      end
+    end
   end
 
   def create
@@ -52,8 +55,8 @@ class ReceiptsController < ApplicationController
   def receipt_params
     params.require(:receipt).permit(:date, :comment, :is_income, :location, receipt_details_attributes: [
                                       :id, :name, :price, :quantity, :receipt_category_id, '_destroy'],
-                                    receipt_prices_attributes: [:account_id, :price, '_destroy'],
-                                    receipt_discounts_attributes: [:comment, :discount, '_destroy']
+                                    receipt_prices_attributes: [:id, :receipt_id, :account_id, :price, '_destroy'],
+                                    receipt_discounts_attributes: [:id, :comment, :discount, '_destroy']
     )
   end
 end

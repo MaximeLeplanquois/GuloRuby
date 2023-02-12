@@ -1,5 +1,4 @@
 <tr id=<%="receipt_price_#{form.index}"%>>
-  <%= form.hidden_field :id %>
   <td><%= form.collection_select :account_id, Account.order(:name), :id, :name%></td>
   <td><%= form.number_field :price, min: 0, step: 0.01 %></td>
   <td><%= form.submit "Remove account",

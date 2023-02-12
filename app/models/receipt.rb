@@ -27,27 +27,33 @@ class Receipt < ApplicationRecord
     return unless receipt_prices.map(&:price).map(&:present?).all?
     return unless receipt_details.map(&:price).map(&:present?).all?
 
-    # For details, map price and quantity column and perform the multiplication
-    price_to_quantity = receipt_details.map(&:price).zip(receipt_details.map(&:quantity)).map { |p, q| p * q }
-    # Sum everything
-    details_total = price_to_quantity.sum
-    prices_total = receipt_prices.map(&:price).sum
-    # Set discount total to 0 if no discounts are present
-    discounts_total = receipt_discounts.present? ? receipt_discounts.map(&:discount).sum : 0
+    valid_receipt_prices = receipt_prices.to_a.select { |r_price| not r_price._destroy.present?}
+    valid_receipt_details = receipt_details.to_a.select { |r_detail| not r_detail._destroy.present?}
+    valid_receipt_discounts = receipt_discounts.to_a.select { |r_detail| not r_detail._destroy.present?}
 
-    if details_total - discounts_total != prices_total
-      errors.add(
-        :prices_mismatch,
+    # For details, map price and quantity column and perform the multiplication
+    price_to_quantity = valid_receipt_details.map(&:price).zip(valid_receipt_details.map(&:quantity)).map { |p, q| p * q }
+    # Sum everything
+    details_total = (price_to_quantity.sum).round(2)
+    prices_total = (valid_receipt_prices.map(&:price).sum).round(2)
+    # Set discount total to 0 if no discounts are present
+    discounts_total = valid_receipt_discounts.present? ? (valid_receipt_discounts.map(&:discount).sum).round(2) : 0
+
+    if (details_total - discounts_total).round(2) != prices_total
+      self.errors.add(
+        :base,
         "Totals do not match (Details : #{details_total}, Discounts : #{discounts_total}, Accounts : #{prices_total})"
       )
     end
   end
 
   def accounts_uniqueness
-    accounts_id = receipt_prices.map(&:account_id)
+    valid_receipt_prices = receipt_prices.to_a.select { |r_price| not r_price._destroy.present?}
+    accounts_id = valid_receipt_prices.map(&:account_id)
     unique_accounts_id = accounts_id.uniq
     return unless unique_accounts_id.size != accounts_id.size
-    errors.add(:duplicate_account, "Some accounts are referenced more than once.")
+
+    errors.add(:base, 'Some accounts are referenced more than once.')
   end
 
   def receipt_details_subtotal

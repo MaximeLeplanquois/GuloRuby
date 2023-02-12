@@ -5,10 +5,12 @@ class ReceiptPricesController < ApplicationController
   end
 
   def create
-    accounts_count = params['receipt']['receipt_prices_attributes'].keys.length
+    accounts_count = 0
+    params['receipt']['receipt_prices_attributes'].each_value do |receipt_price|
+      accounts_count += (receipt_price['_destroy'].nil? ? 1 : 0)
+    end
     if accounts_count < Account.count
       @receipt = Receipt.new(receipt_prices: [ReceiptPrice.new])
-      # render :new
     else
       @receipt = Receipt.new
       error = 'Cannot add more accounts.'
@@ -25,10 +27,14 @@ class ReceiptPricesController < ApplicationController
   end
 
   def destroy
-    accounts_count = params['receipt']['receipt_prices_attributes'].keys.length
+    # Check number of valid prices
+    accounts_count = 0
+    params['receipt']['receipt_prices_attributes'].each_value do |receipt_price|
+      accounts_count += (receipt_price['_destroy'].nil? ? 1 : 0)
+    end
+    # If at least one price still present, proceed with removal of flagged prices
     if accounts_count > 1
       @receipt = Receipt.new(receipt_prices: [ReceiptPrice.new])
-      # render :new
     else
       @receipt = Receipt.new
       error = 'Need at least one account.'
@@ -48,7 +54,7 @@ class ReceiptPricesController < ApplicationController
   private
 
   def receipt_price_params
-    params.require(:receipt_prices_attributes).permit(:account_id, :price, '_destroy')
+    params.require(:receipt_prices_attributes).permit(:receipt_id, :account_id, :price, '_destroy')
   end
 end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_06_120842) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_10_180852) do
   create_table "accounts", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -42,7 +42,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_06_120842) do
     t.index ["receipt_id"], name: "index_receipt_discounts_on_receipt_id"
   end
 
-  create_table "receipt_prices", id: false, force: :cascade do |t|
+  create_table "receipt_prices", force: :cascade do |t|
     t.integer "receipt_id", null: false
     t.integer "account_id", null: false
     t.float "price", null: false

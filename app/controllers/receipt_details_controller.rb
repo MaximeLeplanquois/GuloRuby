@@ -9,7 +9,10 @@ class ReceiptDetailsController < ApplicationController
   end
 
   def destroy
-    details_count = params['receipt']['receipt_details_attributes'].keys.length
+    details_count = 0
+    params['receipt']['receipt_details_attributes'].each_value do |receipt_detail|
+      details_count += (receipt_detail['_destroy'].nil? ? 1 : 0)
+    end
     if details_count > 1
       @receipt = Receipt.new(receipt_details: [ReceiptDetail.new])
     else
