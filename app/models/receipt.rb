@@ -8,6 +8,7 @@ class Receipt < ApplicationRecord
   validates :is_income, presence: false
   validates :comment, presence: true
   validates :location, presence: true
+  validates :store, presence: false
 
   # Ensure at least one associated record for prices & details
   validates :receipt_prices, presence: true

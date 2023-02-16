@@ -3,17 +3,22 @@
 <%= form_with model: @receipt do |form|%>
   <div>
     <%= form.label :date %><br>
-    <%= form.date_field :date, :value => Time.now.strftime("%Y-%m-%d") %>
-  </div>
-
-  <div>
-    <%= form.label :comment %><br>
-    <%= form.text_field :comment %>
+    <%= form.date_field :date, :value => @receipt.date.nil? ? Time.now.strftime("%Y-%m-%d") : @receipt.date %>
   </div>
 
   <div>
     <%= form.label :location %><br>
     <%= form.text_field :location, data: {autocomplete_source: Receipt.distinct.pluck(:location).sort_by { |s| s.downcase }}%>
+  </div>
+
+  <div>
+    <%= form.label :store %><br>
+    <%= form.text_field :store %>
+  </div>
+
+  <div>
+    <%= form.label :comment %><br>
+    <%= form.text_field :comment %>
   </div>
 
   <div>

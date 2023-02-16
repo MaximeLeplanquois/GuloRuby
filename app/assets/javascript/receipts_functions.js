@@ -1,6 +1,5 @@
 //= require jquery
 //= require jquery-ui
-//= require_tree .
 
 function beginningMatcher(data, request, response){
     var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );

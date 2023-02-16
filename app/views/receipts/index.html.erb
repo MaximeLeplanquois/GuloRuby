@@ -5,16 +5,16 @@
 <table>
   <tr>
     <th>Date</th>
-    <th>Comment</th>
     <th>Location</th>
+    <th>Store</th>
     <th>Income</th>
     <th>Total</th>
   </tr>
 <% @receipts.each do |receipt|%>
     <tr>
       <td><%= receipt.date.strftime("%d-%m-%Y") %></td>
-      <td><%= receipt.comment %> </td>
       <td><%= receipt.location %> </td>
+      <td><%= receipt.store %> </td>
       <td><%= receipt.is_income ? "Yes" : "No" %> </td>
       <td><%= number_to_currency(receipt.receipt_prices.sum(:price), format: "%n") %> €</td>
       <td><%= link_to "Details", receipt %></td>
