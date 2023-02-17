@@ -16,4 +16,11 @@ $(document).ready(function(){
         },
         minLength: 1
     });
+    //Store regex
+    $('#receipt_store').autocomplete({
+        source: function(request, response){
+            beginningMatcher($('#receipt_store').data('autocomplete-source'), request, response)
+        },
+        minLength: 1
+    });
 });

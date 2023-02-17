@@ -8,12 +8,12 @@
 
   <div>
     <%= form.label :location %><br>
-    <%= form.text_field :location, data: {autocomplete_source: Receipt.distinct.pluck(:location).sort_by { |s| s.downcase }}%>
+    <%= form.text_field :location, data: {autocomplete_source: Receipt.distinct.pluck(:location).compact.sort_by { |s| s.downcase }}%>
   </div>
 
   <div>
     <%= form.label :store %><br>
-    <%= form.text_field :store %>
+    <%= form.text_field :store, data: {autocomplete_source: Receipt.distinct.pluck(:store).compact.sort_by { |s| s.downcase }}%>
   </div>
 
   <div>
