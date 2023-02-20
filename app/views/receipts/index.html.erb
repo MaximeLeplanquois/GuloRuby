@@ -16,10 +16,16 @@
       <td><%= receipt.location %> </td>
       <td><%= receipt.store %> </td>
       <td><%= receipt.is_income ? "Yes" : "No" %> </td>
-      <td><%= number_to_currency(receipt.receipt_prices.sum(:price), format: "%n") %> €</td>
+      <td class="<%= receipt.is_income ? "income" : "expense" %>"><%= number_to_currency(receipt.receipt_prices.sum(:price), format: "%n") %> €</td>
       <td><%= link_to "Details", receipt %></td>
       <td><%= button_to "Edit", receipt_edit_path(receipt), :method => :get %></td>
       <td><%= button_to "Delete", receipt, :method => :delete, form: { data: { turbo_confirm: "Are you sure ?" } } %></td>
     </tr>
 <% end %>
 </table>
+
+<% categories_sum = Receipt.joins(:receipt_details => :receipt_category).group('receipt_categories.name').sum('receipt_details.price') %>
+<% total_per_month = Receipt.joins(:receipt_details => :receipt_category).select("receipt_categories.name as 'r_name', receipts.date, sum(receipt_details.price) as 'total'").group("receipt_categories.name, strftime('%Y-%m', receipts.date)")%>
+
+<%= pie_chart categories_sum, round: 2, zeros: true, suffix: " €" %>
+<%= bar_chart total_per_month.to_a.group_by(&:r_name).map { |k, v| {name:k, data: v.map{ |v2| {v2.date.strftime('%B %Y') => v2.total}}.reduce(:merge)}}, stacked: true, round: 2, zeros: true, suffix: " €", height: "2000px" %>

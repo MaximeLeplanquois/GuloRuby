@@ -1,6 +1,6 @@
 class ReceiptsController < ApplicationController
   def index
-    @receipts = Receipt.all.includes(:receipt_details).order(:date)
+    @receipts = Receipt.all.includes(:receipt_details).order(date: :desc)
   end
 
   def show
