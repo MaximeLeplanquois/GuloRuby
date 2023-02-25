@@ -12,6 +12,17 @@ class ReceiptsController < ApplicationController
                            receipt_prices: [ReceiptPrice.new])
   end
 
+  def search_by_date
+    if params[:query_month]
+      month = Receipt.sanitize_sql_like(params[:query_month].rjust(2,'0'))
+      year = Receipt.sanitize_sql_like(params[:query_year])
+      @receipts = Receipt.all.where("strftime('%m-%Y', date) = ? ", "#{month}-#{year}")
+      @month = Date::MONTHNAMES[params[:query_month].to_i]
+      @year = year
+      render 'receipts/search_by_date'
+    end
+  end
+
   def destroy
     @receipt = Receipt.find(params[:id])
     @receipt.destroy

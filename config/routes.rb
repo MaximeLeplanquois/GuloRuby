@@ -28,4 +28,7 @@ Rails.application.routes.draw do
   end
   resources :accounts
   resources :receipt_categories
+
+  get '/search', to: 'receipts#search_by_date'
+  post '/search', to: 'receipts#search_by_date'
 end

@@ -1,0 +1,46 @@
+<%= form_with url: "/search", method: :post, data: { turbo: false } do |form| %>
+  <%= form.label :query_month, "Search by month :" %>
+  <% value = '' %>
+  <% unless @month.nil?
+       value = Date::MONTHNAMES.index(@month)
+     end
+  %>
+  <%= form.text_field :query_month, value: value %>
+  <%= form.label :query_year, "Year :" %>
+  <% year = Date.today.year %>
+  <% unless @year.nil?
+       year = @year
+     end
+  %>
+  <%= form.number_field :query_year, min: 2021, max: Date.today.year, step: 1, value: year%>
+  <%= form.submit "Search" %>
+<% end %>
+<% unless @month.nil? or @year.nil?%>
+  <% if @receipts.length <= 0 %>
+    <h1>Cannot find receipts for <%= "#{@month} #{@year}" %></h1>
+  <% else %>
+    <h1>Searched <%= "#{@month} #{@year}" %></h1>
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Location</th>
+        <th>Store</th>
+        <th>Income</th>
+        <th>Total</th>
+      </tr>
+    <% @receipts.each do |receipt|%>
+      <tr>
+        <td><%= receipt.date.strftime("%d-%m-%Y") %></td>
+        <td><%= receipt.location %> </td>
+        <td><%= receipt.store %> </td>
+        <td><%= receipt.is_income ? "Yes" : "No" %> </td>
+        <td class="<%= receipt.is_income ? "income" : "expense" %>"><%= number_to_currency(receipt.receipt_prices.sum(:price), format: "%n") %> €</td>
+        <td><%= link_to "Details", receipt %></td>
+        <td><%= button_to "Edit", receipt_edit_path(receipt), :method => :get %></td>
+        <td><%= button_to "Delete", receipt, :method => :delete, form: { data: { turbo_confirm: "Are you sure ?" } } %></td>
+      </tr>
+    <% end %>
+    </table>
+  <% end %>
+<% end %>
+<%= link_to "Home", receipts_path %><br>

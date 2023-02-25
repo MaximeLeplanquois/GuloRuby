@@ -1,5 +1,6 @@
 <h1>All Receipts</h1>
 <%= link_to "Add receipt", new_receipt_path %><br>
+<%= link_to "Search by month", search_url %><br>
 <%= link_to "Accounts", accounts_path %>
 <%= link_to "Categories", receipt_categories_path %>
 <table>
@@ -24,8 +25,8 @@
 <% end %>
 </table>
 
-<% categories_sum = Receipt.joins(:receipt_details => :receipt_category).group('receipt_categories.name').sum('receipt_details.price') %>
-<% total_per_month = Receipt.joins(:receipt_details => :receipt_category).select("receipt_categories.name as 'r_name', receipts.date, sum(receipt_details.price) as 'total'").group("receipt_categories.name, strftime('%Y-%m', receipts.date)")%>
+<% categories_sum = Receipt.joins(:receipt_details => :receipt_category).where('receipts.is_income is FALSE').group('receipt_categories.name').sum('receipt_details.price') %>
+<% total_per_month = Receipt.joins(:receipt_details => :receipt_category).where('receipts.is_income is FALSE').select("receipt_categories.name as 'r_name', receipts.date, sum(receipt_details.price) as 'total'").group("receipt_categories.name, strftime('%Y-%m', receipts.date)")%>
 
 <%= pie_chart categories_sum, round: 2, zeros: true, suffix: " €" %>
-<%= bar_chart total_per_month.to_a.group_by(&:r_name).map { |k, v| {name:k, data: v.map{ |v2| {v2.date.strftime('%B %Y') => v2.total}}.reduce(:merge)}}, stacked: true, round: 2, zeros: true, suffix: " €", height: "2000px" %>
+<%= bar_chart total_per_month.to_a.group_by(&:r_name).map { |k, v| {name:k, data: v.map{ |v2| {v2.date.strftime('%B %Y') => v2.total}}.reduce(:merge)}}.sort_by{ |v| v[:data].keys.map { |k| k.to_date}.min }, stacked: true, round: 2, zeros: true, suffix: " €", height: "2000px" %>
