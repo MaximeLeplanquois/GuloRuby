@@ -8,6 +8,7 @@
     <th>Date</th>
     <th>Location</th>
     <th>Store</th>
+    <th>Comment</th>
     <th>Income</th>
     <th>Total</th>
   </tr>
@@ -16,6 +17,7 @@
       <td><%= receipt.date.strftime("%d-%m-%Y") %></td>
       <td><%= receipt.location %> </td>
       <td><%= receipt.store %> </td>
+      <td><%= receipt.comment %> </td>
       <td><%= receipt.is_income ? "Yes" : "No" %> </td>
       <td class="<%= receipt.is_income ? "income" : "expense" %>"><%= number_to_currency(receipt.receipt_prices.sum(:price), format: "%n") %> €</td>
       <td><%= link_to "Details", receipt %></td>
@@ -29,4 +31,10 @@
 <% total_per_month = Receipt.joins(:receipt_details => :receipt_category).where('receipts.is_income is FALSE').select("receipt_categories.name as 'r_name', receipts.date, sum(receipt_details.price) as 'total'").group("receipt_categories.name, strftime('%Y-%m', receipts.date)")%>
 
 <%= pie_chart categories_sum, round: 2, zeros: true, suffix: " €" %>
-<%= bar_chart total_per_month.to_a.group_by(&:r_name).map { |k, v| {name:k, data: v.map{ |v2| {v2.date.strftime('%B %Y') => v2.total}}.reduce(:merge)}}.sort_by{ |v| v[:data].keys.map { |k| k.to_date}.min }, stacked: true, round: 2, zeros: true, suffix: " €", height: "2000px" %>
+
+<% all_month = 2022.upto(Date.today.year).flat_map { |y| Date::MONTHNAMES.compact.map { |m| "#{m} #{y}"}} %>
+<% test = total_per_month.to_a.group_by(&:r_name).map { |k, v| {name:k, data: v.map{ |v2| {v2.date.strftime('%B %Y') => v2.total}}.reduce(:merge)}}.sort_by{ |v| v[:data].keys.map { |k| k.to_date}.min }%>
+<!-- Map each month/year values in first element to have ordered dates -->
+<% test[0][:data] = all_month.filter_map { |k| [k, test[0][:data][k].nil? ? 0.0 : test[0][:data][k]] if Date.strptime(k, '%B %Y') <= Date.today}.to_h %>
+<%#= bar_chart total_per_month.to_a.group_by(&:r_name).map { |k, v| {name:k, data: v.map{ |v2| {v2.date.strftime('%B %Y') => v2.total}}.reduce(:merge)}}.sort_by{ |v| v[:data].keys.map { |k| k.to_date}.min }, stacked: true, round: 2, zeros: true, suffix: " €", height: "2000px" %>
+<%= bar_chart test, stacked: true, round: 2, zeros: true, suffix: " €", height: "2000px" %>

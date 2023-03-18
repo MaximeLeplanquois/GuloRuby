@@ -5,14 +5,15 @@
        value = Date::MONTHNAMES.index(@month)
      end
   %>
-  <%= form.text_field :query_month, value: value %>
+  <%= form.number_field :query_month, min: 1, max: 12, step: 1, value: value %>
   <%= form.label :query_year, "Year :" %>
   <% year = Date.today.year %>
   <% unless @year.nil?
        year = @year
      end
   %>
-  <%= form.number_field :query_year, min: 2021, max: Date.today.year, step: 1, value: year%>
+  <!-- TODO Set min to min value in database -->
+  <%= form.number_field :query_year, min: 2022, max: Date.today.year, step: 1, value: year%>
   <%= form.submit "Search" %>
 <% end %>
 <% unless @month.nil? or @year.nil?%>
@@ -25,6 +26,7 @@
         <th>Date</th>
         <th>Location</th>
         <th>Store</th>
+        <th>Comment</th>
         <th>Income</th>
         <th>Total</th>
       </tr>
@@ -33,6 +35,7 @@
         <td><%= receipt.date.strftime("%d-%m-%Y") %></td>
         <td><%= receipt.location %> </td>
         <td><%= receipt.store %> </td>
+        <td><%= receipt.comment %> </td>
         <td><%= receipt.is_income ? "Yes" : "No" %> </td>
         <td class="<%= receipt.is_income ? "income" : "expense" %>"><%= number_to_currency(receipt.receipt_prices.sum(:price), format: "%n") %> €</td>
         <td><%= link_to "Details", receipt %></td>
