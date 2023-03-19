@@ -27,8 +27,8 @@
 <% end %>
 </table>
 
-<% categories_sum = Receipt.joins(:receipt_details => :receipt_category).where('receipts.is_income is FALSE').group('receipt_categories.name').sum('receipt_details.price') %>
-<% total_per_month = Receipt.joins(:receipt_details => :receipt_category).where('receipts.is_income is FALSE').select("receipt_categories.name as 'r_name', receipts.date, sum(receipt_details.price) as 'total'").group("receipt_categories.name, strftime('%Y-%m', receipts.date)")%>
+<% categories_sum = Receipt.joins(:receipt_details => :receipt_category).where('receipts.is_income is FALSE').group('receipt_categories.name').sum('receipt_details.price * receipt_details.quantity') %>
+<% total_per_month = Receipt.joins(:receipt_details => :receipt_category).where('receipts.is_income is FALSE').select("receipt_categories.name as 'r_name', receipts.date, sum(receipt_details.price * receipt_details.quantity) as 'total'").group("receipt_categories.name, strftime('%Y-%m', receipts.date)")%>
 
 <%= pie_chart categories_sum, round: 2, zeros: true, suffix: " €" %>
 
