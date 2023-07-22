@@ -14,13 +14,18 @@ $(document).ready(function(){
         source: function(request, response){
             beginningMatcher($('#receipt_location').data('autocomplete-source'), request, response)
         },
-        minLength: 1
+        minLength: 0
+    }).focus(function () {
+        $(this).autocomplete("search", $(this).val());
     });
     //Store regex
     $('#receipt_store').autocomplete({
         source: function(request, response){
-            beginningMatcher($('#receipt_store').data('autocomplete-source'), request, response)
+            stores = $('#receipt_store').data('autocomplete-source').filter(val => val[1] == $('#receipt_location').val()).map(val => val[0])
+            beginningMatcher(stores, request, response)
         },
-        minLength: 1
+        minLength: 0
+    }).focus(function () {
+        $(this).autocomplete("search", $('#receipt_store').val());
     });
 });

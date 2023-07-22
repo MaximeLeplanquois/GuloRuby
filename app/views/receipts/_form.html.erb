@@ -13,7 +13,7 @@
 
   <div>
     <%= form.label :store %><br>
-    <%= form.text_field :store, data: {autocomplete_source: Receipt.distinct.pluck(:store).compact.sort_by { |s| s.downcase }}%>
+    <%= form.text_field :store, data: {autocomplete_source: Receipt.distinct.where.not(:location => nil).where.not(:store => nil).pluck(:store, :location).sort_by { |s, l| [l.downcase, s.downcase] }}%>
   </div>
 
   <div>
