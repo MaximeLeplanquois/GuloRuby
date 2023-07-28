@@ -7,7 +7,7 @@ class Receipt < ApplicationRecord
   validates :date, presence: true
   validates :is_income, presence: false
   validates :comment, presence: true
-  validates :location, presence: true
+  validates :location, presence: false
   validates :store, presence: false
 
   # Ensure at least one associated record for prices & details
@@ -22,6 +22,14 @@ class Receipt < ApplicationRecord
 
   validate :total_equals_details_prices_and_discounts
   validate :accounts_uniqueness
+
+  before_save :normalize_blank_values
+
+  def normalize_blank_values
+    attributes.each do |column, value|
+      self[column].present? || self[column] = nil
+    end
+  end
 
   def total_equals_details_prices_and_discounts
     # Check that every price is valid for both list
