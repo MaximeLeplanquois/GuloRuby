@@ -15,8 +15,8 @@
 <% @receipts.each do |receipt|%>
     <tr>
       <td><%= receipt.date.strftime("%d-%m-%Y") %></td>
-      <td><%= receipt.location %> </td>
-      <td><%= receipt.store %> </td>
+      <td><%= receipt.location.nil? ? sanitize("<em> N/A </em>") : receipt.location %></td>
+      <td><%= receipt.store.nil? ? sanitize("<em> N/A </em>") : receipt.store %> </td>
       <td><%= receipt.comment %> </td>
       <td><%= receipt.is_income ? "Yes" : "No" %> </td>
       <td class="<%= receipt.is_income ? "income" : "expense" %>"><%= number_to_currency(receipt.receipt_prices.sum(:price), format: "%n") %> €</td>

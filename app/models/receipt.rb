@@ -26,8 +26,8 @@ class Receipt < ApplicationRecord
   before_save :normalize_blank_values
 
   def normalize_blank_values
-    attributes.each do |column, value|
-      self[column].present? || self[column] = nil
+    attributes.each do |column, _|
+      self[column].present? || self[column] = nil if column.in? %w[store location]
     end
   end
 

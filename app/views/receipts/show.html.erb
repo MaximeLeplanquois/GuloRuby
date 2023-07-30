@@ -1,7 +1,7 @@
 <ul>
     <li>Date : <%= @receipt.date.strftime("%d-%m-%Y") %></li>
-    <li>Location : <%= @receipt.location %> </li>
-    <li>Store : <%= @receipt.store %> </li>
+    <li>Location : <%= @receipt.location.nil? ? sanitize("<em> N/A </em>") : @receipt.location %> </li>
+    <li>Store : <%= @receipt.store.nil? ? sanitize("<em> N/A </em>") : @receipt.store %> </li>
     <li>Comment : <%= @receipt.comment %> </li>
     <li>Income : <%= @receipt.is_income ? "Yes" : "No" %> </li>
     <% unless @receipt.receipt_prices.nil? %>
