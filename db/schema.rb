@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_15_121302) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_30_153847) do
   create_table "accounts", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -39,6 +39,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_15_121302) do
     t.datetime "updated_at", null: false
     t.integer "receipt_id"
     t.text "comment"
+    t.integer "receipt_category_id"
     t.index ["receipt_id"], name: "index_receipt_discounts_on_receipt_id"
   end
 
@@ -60,5 +61,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_15_121302) do
 
   add_foreign_key "receipt_details", "receipt_categories"
   add_foreign_key "receipt_details", "receipts"
+  add_foreign_key "receipt_discounts", "receipt_categories"
   add_foreign_key "receipt_discounts", "receipts"
 end

@@ -52,6 +52,7 @@
         <tr>
           <td><%= discount.comment %></td>
           <td><%= number_to_currency(discount.discount, format: "%n") %> €</td>
+          <td><%= discount.receipt_category.name %></td>
         </tr>
       <% end %>
     </table>

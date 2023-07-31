@@ -1,6 +1,7 @@
 <tr id=<%="receipt_discount_#{form.index}"%>>
   <td><%= form.text_field :comment %></td>
   <td><%= form.number_field :discount, min: 0, step: 0.01 %></td>
+  <td><%= form.collection_select :receipt_category_id, ReceiptCategory.order(:name), :id, :name%></td>
   <td><%= form.submit "Remove discount",
                       formaction: receipt_discount_path(form.index, form.object.id),
                       formmethod: :delete,

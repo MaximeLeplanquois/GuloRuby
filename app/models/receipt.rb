@@ -22,6 +22,7 @@ class Receipt < ApplicationRecord
 
   validate :total_equals_details_prices_and_discounts
   validate :accounts_uniqueness
+  validate :matching_categories
 
   before_save :normalize_blank_values
 
@@ -35,6 +36,7 @@ class Receipt < ApplicationRecord
     # Check that every price is valid for both list
     return unless receipt_prices.map(&:price).map(&:present?).all?
     return unless receipt_details.map(&:price).map(&:present?).all?
+    return unless receipt_discounts.map(&:discount).map(&:present?).all?
 
     valid_receipt_prices = receipt_prices.to_a.select { |r_price| not r_price._destroy.present?}
     valid_receipt_details = receipt_details.to_a.select { |r_detail| not r_detail._destroy.present?}
@@ -49,7 +51,7 @@ class Receipt < ApplicationRecord
     discounts_total = valid_receipt_discounts.present? ? (valid_receipt_discounts.map(&:discount).sum).round(2) : 0
 
     if (details_total - discounts_total).round(2) != prices_total
-      self.errors.add(
+      errors.add(
         :base,
         "Totals do not match (Details : #{details_total}, Discounts : #{discounts_total}, Accounts : #{prices_total})"
       )
@@ -63,6 +65,14 @@ class Receipt < ApplicationRecord
     return unless unique_accounts_id.size != accounts_id.size
 
     errors.add(:base, 'Some accounts are referenced more than once.')
+  end
+
+  def matching_categories
+    valid_categories = receipt_details.to_a.pluck(:receipt_category_id)
+    discount_categories = receipt_discounts.to_a.pluck(:receipt_category_id)
+    return if (discount_categories - valid_categories).empty?
+
+    errors.add(:base, 'Discounts categories does not match receipt details\'s categories.')
   end
 
   def receipt_details_subtotal
