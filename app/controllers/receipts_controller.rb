@@ -14,12 +14,22 @@ class ReceiptsController < ApplicationController
 
   def search_by_date
     if params[:query_month]
-      month = Receipt.sanitize_sql_like(params[:query_month].rjust(2,'0'))
+      month = Receipt.sanitize_sql_like(params[:query_month].rjust(2, '0'))
       year = Receipt.sanitize_sql_like(params[:query_year])
       @receipts = Receipt.all.where("strftime('%m-%Y', date) = ? ", "#{month}-#{year}").order(date: :asc)
-      # @categories_sum = Receipt.joins(:receipt_details => :receipt_category).left_joins(:receipt_discounts => :receipt).where("strftime('%m-%Y', receipts.date) = ? ", "#{month}-#{year}").where('receipts.is_income is FALSE').group('receipt_categories.name').sum('receipt_details.price * receipt_details.quantity - IFNULL(receipt_discounts.discount, 0)')
-      @categories_sum = Receipt.joins(:receipt_details => :receipt_category).where("strftime('%m-%Y', receipts.date) = ? ", "#{month}-#{year}").where('receipts.is_income is FALSE').group('receipt_categories.name').sum('receipt_details.price * receipt_details.quantity')
-      @discounts_sum = ReceiptDiscount.joins(:receipt, :receipt_category).where("strftime('%m-%Y', receipts.date) = ? ", "#{month}-#{year}").where('receipts.is_income is FALSE').group('receipt_categories.name').sum('receipt_discounts.discount')
+      unless @receipts.empty?
+        categories_sum = Receipt.joins(:receipt_details => :receipt_category)
+                                .where("strftime('%m-%Y', receipts.date) = ? ", "#{month}-#{year}")
+                                .where('receipts.is_income is FALSE')
+                                .group('receipt_categories.name')
+                                .sum('receipt_details.price * receipt_details.quantity')
+        discounts_sum = ReceiptDiscount.joins(:receipt, :receipt_category)
+                                       .where("strftime('%m-%Y', receipts.date) = ? ", "#{month}-#{year}")
+                                       .where('receipts.is_income is FALSE')
+                                       .group('receipt_categories.name')
+                                       .sum('receipt_discounts.discount')
+        @total_per_category = categories_sum.merge(discounts_sum) { |k, v1, v2| (v1 - v2).round(2) }
+      end
       @month = Date::MONTHNAMES[params[:query_month].to_i]
       @year = year
       render 'receipts/search_by_date'

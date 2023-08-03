@@ -48,6 +48,6 @@
 <% end %>
 <%= link_to "Home", receipts_path %><br>
 
-<% unless @categories_sum.nil? or @discounts_sum.nil?%>
-  <%= pie_chart @categories_sum.merge(@discounts_sum) { |k, v1, v2| (v1 - v2).round(2) }, round: 2, zeros: true, suffix: " €" %>
+<% unless @total_per_category.nil?%>
+  <%= pie_chart @total_per_category, round: 2, zeros: true, suffix: " €" %>
 <% end %>

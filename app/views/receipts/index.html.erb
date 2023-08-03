@@ -27,21 +27,12 @@
 <% end %>
 </table>
 
-<% categories_sum = Receipt.joins(:receipt_details => :receipt_category).where('receipts.is_income is FALSE').group('receipt_categories.name').sum('receipt_details.price * receipt_details.quantity') %>
-<% categories_discounts = ReceiptDiscount.joins(:receipt, :receipt_category).where('receipts.is_income is FALSE').group('receipt_categories.name').sum('receipt_discounts.discount') %>
-<% total_per_month = Receipt.joins(:receipt_details => :receipt_category).left_joins(:receipt_discounts => :receipt).where('receipts.is_income is FALSE').select("receipt_categories.name as 'r_name', receipts.date, sum(receipt_details.price * receipt_details.quantity - IFNULL(receipt_discounts.discount, 0)) as 'total'").group("receipt_categories.name, strftime('%Y-%m', receipts.date)")%>
-<%= pie_chart categories_sum.merge(categories_discounts) { |k, v1, v2| (v1 - v2).round(2) }, round: 2, zeros: true, suffix: " €" %>
+<%= pie_chart total_sum_per_category.merge(total_discount_per_category) { |k, v1, v2| (v1 - v2).round(2) }, round: 2, zeros: true, suffix: " €" %>
 
-<% total_cat_date = Receipt.joins(:receipt_details => :receipt_category).where('receipts.is_income is FALSE').group('receipt_categories.name, strftime("%m-%Y", receipts.date)').select("receipt_categories.name as 'r_name', receipts.date as 'r_date', sum(receipt_details.price * receipt_details.quantity) as 'total'")%>
-<% total_cat_discount_date = ReceiptDiscount.joins(:receipt, :receipt_category).where('receipts.is_income is FALSE').group('receipt_categories.name, strftime("%m-%Y", receipts.date)').select("receipt_categories.name as 'r_name', receipts.date as 'r_date', sum(receipt_discounts.discount) as 'total'")%>
-<% total_cat_date.each do |total| %>
-  <% corr_disc = total_cat_discount_date.filter_map{ |disc| disc[:total] if Date.parse(disc[:r_date]).strftime('%B %Y') == Date.parse(total[:r_date]).strftime('%B %Y') and disc[:r_name] == total[:r_name]} %>
-  <% total[:total] = total[:total] - (corr_disc.empty? ? 0 : corr_disc[0]) %>
-<% end %>
+<% total_cat_date = total_per_date_and_category %>
 
-<% all_month = 2022.upto(Date.today.year).flat_map { |y| Date::MONTHNAMES.compact.map { |m| "#{m} #{y}"}} %>
-<% test = total_cat_date.to_a.group_by(&:r_name).map { |k, v| {name:k, data: v.map{ |v2| {Date.parse(v2.r_date).strftime('%B %Y') => v2.total}}.reduce(:merge)}}.sort_by{ |v| v[:data].keys.map { |k| k.to_date}.min }%>
+<% months = get_months_from_year(2022) %>
+<% total_ordered = total_cat_date.to_a.group_by(&:r_name).map { |k, v| {name:k, data: v.map{ |v2| {Date.parse(v2.r_date).strftime('%B %Y') => v2.total}}.reduce(:merge)}}.sort_by{ |v| v[:data].keys.map { |k| k.to_date}.min }%>
 <!-- Map each month/year values in first element to have ordered dates -->
-<% test[0][:data] = all_month.filter_map { |k| [k, test[0][:data][k].nil? ? 0.0 : test[0][:data][k]] if Date.strptime(k, '%B %Y') <= Date.today}.to_h %>
-<%#= bar_chart total_per_month.to_a.group_by(&:r_name).map { |k, v| {name:k, data: v.map{ |v2| {v2.date.strftime('%B %Y') => v2.total}}.reduce(:merge)}}.sort_by{ |v| v[:data].keys.map { |k| k.to_date}.min }, stacked: true, round: 2, zeros: true, suffix: " €", height: "2000px" %>
-<%= bar_chart test, stacked: true, round: 2, zeros: true, suffix: " €", height: "2000px" %>
+<% total_ordered[0][:data] = months.filter_map { |k| [k, total_ordered[0][:data][k].nil? ? 0.0 : total_ordered[0][:data][k]] if Date.strptime(k, '%B %Y') <= Date.today}.to_h %>
+<%= bar_chart total_ordered, stacked: true, round: 2, zeros: true, suffix: " €", height: "2000px" %>
