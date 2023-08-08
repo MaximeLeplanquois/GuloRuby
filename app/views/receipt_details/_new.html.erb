@@ -2,7 +2,7 @@
   <td><%= form.text_field :name %></td>
   <td><%= form.number_field :price, min: 0, step: 0.01 %></td>
   <td><%= form.number_field :quantity, min: 1, step: 1 %></td>
-  <td><%= form.collection_select :receipt_category_id, ReceiptCategory.order(:name), :id, :name%></td>
+  <td><%= form.collection_select :receipt_category_id, ReceiptCategory.order(:name), :id, :name, {:selected => id_from_name("Food")}%></td>
   <td><%= form.submit "Remove detail",
                       formaction: receipt_detail_path(form.index, form.object.id),
                       formmethod: :delete,
