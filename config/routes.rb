@@ -31,4 +31,7 @@ Rails.application.routes.draw do
 
   get '/search', to: 'receipts#search_by_date'
   post '/search', to: 'receipts#search_by_date'
+
+  get '/all_receipts', to: 'receipts#all_receipts'
+  post '/all_receipts', to: 'receipts#all_receipts'
 end

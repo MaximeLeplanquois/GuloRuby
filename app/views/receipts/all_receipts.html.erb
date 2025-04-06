@@ -1,0 +1,29 @@
+<h1>All Receipts</h1>
+<%= link_to "Add receipt", new_receipt_path %><br>
+<%= link_to "Search by month", search_url %><br>
+<%= link_to "Accounts", accounts_path %>
+<%= link_to "Categories", receipt_categories_path %><br>
+<%= link_to "Overview", receipts_path %>
+<table>
+  <tr>
+    <th>Date</th>
+    <th>Location</th>
+    <th>Store</th>
+    <th>Comment</th>
+    <th>Income</th>
+    <th>Total</th>
+  </tr>
+  <% @receipts.each do |receipt|%>
+    <tr>
+      <td><%= receipt.date.strftime("%d-%m-%Y") %></td>
+      <td><%= receipt.location.nil? ? sanitize("<em> N/A </em>") : receipt.location %></td>
+      <td><%= receipt.store.nil? ? sanitize("<em> N/A </em>") : receipt.store %> </td>
+      <td><%= receipt.comment %> </td>
+      <td><%= receipt.is_income ? "Yes" : "No" %> </td>
+      <td class="<%= receipt.is_income ? "income" : "expense" %>"><%= number_to_currency(receipt.receipt_prices.sum(:price), format: "%n") %> €</td>
+      <td><%= link_to "Details", receipt %></td>
+      <td><%= button_to "Edit", receipt_edit_path(receipt), :method => :get %></td>
+      <td><%= button_to "Delete", receipt, :method => :delete, form: { data: { turbo_confirm: "Are you sure ?" } } %></td>
+    </tr>
+  <% end %>
+</table>

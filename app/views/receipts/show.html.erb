@@ -12,7 +12,7 @@
       </tr>
       <% @receipt.receipt_prices.each do |r_price| %>
         <tr>
-          <td><%= Account.find(r_price.account_id).name %></td>
+          <td><%= @receipt.accounts.find(r_price.account_id).name %></td>
           <td><%= number_to_currency(r_price.price, format: "%n") %> €</td>
         </tr>
       <% end %>
@@ -59,4 +59,4 @@
   <% end %>
 </ul>
 
-<%= link_to "All receipts", receipts_path %>
+<%= link_to "All receipts", all_receipts_path %>

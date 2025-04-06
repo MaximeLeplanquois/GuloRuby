@@ -3,8 +3,12 @@ class ReceiptsController < ApplicationController
     @receipts = Receipt.all.includes(:receipt_details).order(date: :desc)
   end
 
+  def all_receipts
+    @receipts = Receipt.all.includes(:receipt_details).order(date: :desc)
+  end
+
   def show
-    @receipt = Receipt.find(params[:id])
+    @receipt = Receipt.joins(:accounts).find(params[:id])
   end
 
   def new
@@ -28,7 +32,7 @@ class ReceiptsController < ApplicationController
                                        .where('receipts.is_income is FALSE')
                                        .group('receipt_categories.name')
                                        .sum('receipt_discounts.discount')
-        @total_per_category = categories_sum.merge(discounts_sum) { |k, v1, v2| (v1 - v2).round(2) }
+        @total_per_category = categories_sum.merge(discounts_sum) { |_, v1, v2| (v1 - v2).round(2) }
       end
       @month = Date::MONTHNAMES[params[:query_month].to_i]
       @year = year
