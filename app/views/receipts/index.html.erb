@@ -11,6 +11,8 @@
 
 <% months = get_months_from_year(2022) %>
 <% total_ordered = total_cat_date.to_a.group_by(&:r_name).map { |k, v| {name:k, data: v.map{ |v2| {Date.parse(v2.r_date).strftime('%B %Y') => v2.total}}.reduce(:merge)}}.sort_by{ |v| v[:data].keys.map { |k| k.to_date}.min }%>
+<!-- Sort by name -->
+<% total_ordered.sort_by! { |k| k[:name] } %>
 <!-- Map each month/year values in first element to have ordered dates -->
 <% total_ordered[0][:data] = months.filter_map { |k| [k, total_ordered[0][:data][k].nil? ? 0.0 : total_ordered[0][:data][k]] if Date.strptime(k, '%B %Y') <= Date.today}.to_h %>
 <%= bar_chart total_ordered, stacked: true, round: 2, zeros: true, suffix: " €", height: "2000px" %>
