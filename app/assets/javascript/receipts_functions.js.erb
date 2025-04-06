@@ -49,13 +49,14 @@ $(document).ready(function(){
         });
     });
 
+    // Create autocompletion array
     <%= categories = ReceiptCategory.distinct.pluck(:name, :id).sort_by { |name, _| name.downcase } %>
-    <%= details = ReceiptDetail.distinct.pluck(:name, :receipt_category_id).sort_by { |name, cat_id| [cat_id, name.downcase] } %>
     const details_names = [];
     <% categories.each do |name, id|%>
+      <%= details = ReceiptDetail.where("receipt_category_id = ?", id).distinct.pluck(:name).sort_by { |d_name| d_name.downcase } %>
       details_names.push({
         key: "<%= name %>",
-        value: <%= details.filter_map { |det_name, cat_id| det_name if cat_id == id } %>
+        value: <%= details %>
       });
     <% end %>
 });
